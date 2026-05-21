@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Shriraj Kamble — CSE[AIML] Systems portfolio. IoT, ESP32, Arduino, and hands-on engineering." />
+  <title>Shriraj Kamble | Embedded Systems &amp; IoT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg-elevated: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #38bdf8;
+      --accent-dim: rgba(56, 189, 248, 0.15);
+      --accent-glow: rgba(56, 189, 248, 0.45);
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+      --font-sans: "Inter", system-ui, sans-serif;
+      --radius: 12px;
+      --nav-h: 72px;
+      --transition: 0.25s ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ----- Nav ----- */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .nav-links {
+      display: flex;
+      gap: 0.35rem;
+      list-style: none;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-left: auto;
+    }
+    .nav-lab-logo {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 0;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.12);
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+    .nav-lab-logo:hover {
+      border-color: rgba(56, 189, 248, 0.55);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.25);
+      transform: scale(1.04);
+      text-decoration: none;
+    }
+    .nav-lab-logo img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      padding: 3px;
+      border-radius: 50%;
+      display: block;
+    }
+    .logo {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--accent); }
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 0.5rem 0.65rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: color var(--transition), background var(--transition), box-shadow var(--transition);
+    }
+    .nav-links a:hover { color: var(--text); background: var(--accent-dim); }
+    .nav-links a.active {
+      color: var(--accent);
+      background: var(--accent-dim);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+    }
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+    @media (max-width: 900px) {
+      .nav-toggle { display: flex; }
+      .nav-links {
+        position: fixed;
+        top: var(--nav-h);
+        left: 0;
+        right: 0;
+        background: var(--bg-elevated);
+        border-bottom: 1px solid var(--border);
+        flex-direction: column;
+        padding: 1rem;
+        gap: 0;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: max-height 0.35s ease, opacity 0.25s ease;
+      }
+      .nav-links.open {
+        max-height: 480px;
+        opacity: 1;
+      }
+      .nav-links a { padding: 0.85rem 1rem; }
+    }
+
+    /* ----- Layout ----- */
+    section {
+      padding: 5rem 1.25rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      scroll-margin-top: calc(var(--nav-h) + 12px);
+    }
+    .section-title {
+      font-family: var(--font-mono);
+      font-size: clamp(1.35rem, 3vw, 1.75rem);
+      font-weight: 700;
+      margin-bottom: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .section-title::before {
+      content: "//";
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    /* Fade-in (Intersection Observer) */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ----- Hero ----- */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: calc(var(--nav-h) + 2rem);
+      scroll-margin-top: 0;
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      border-radius: 0 0 24px 24px;
+    }
+    .hero-grid {
+      position: absolute;
+      inset: -50%;
+      background-image:
+        linear-gradient(rgba(56, 189, 248, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+      animation: gridMove 20s linear infinite;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 70%);
+    }
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(48px, 48px); }
+    }
+    .hero-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 50%;
+      opacity: 0.35;
+      animation: float 8s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
+      50% { transform: translateY(-30px) scale(1.2); opacity: 0.55; }
+    }
+    .hero h1 {
+      font-family: var(--font-mono);
+      font-size: clamp(2.25rem, 6vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .hero h1 .accent { color: var(--accent); text-shadow: 0 0 40px var(--accent-glow); }
+    .hero-tagline {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      margin-bottom: 1.25rem;
+      max-width: 640px;
+    }
+    .typewriter-line {
+      font-family: var(--font-mono);
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--accent);
+      min-height: 1.6em;
+      margin-bottom: 1.25rem;
+    }
+    .typewriter-line .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.1em;
+      background: var(--accent);
+      margin-left: 4px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    .hero-bio {
+      max-width: 540px;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 2rem;
+    }
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.85rem 1.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition), background var(--transition);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn:hover { transform: translateY(-2px); text-decoration: none; }
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(56, 189, 248, 0.05));
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.15);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 32px var(--accent-glow);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+    }
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ----- About ----- */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+    }
+    .avatar {
+      width: 200px;
+      height: 200px;
+      border-radius: var(--radius);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      display: block;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(56, 189, 248, 0.15);
+      flex-shrink: 0;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 15%;
+      display: block;
+    }
+    .about-text p {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .about-text p strong { color: var(--text); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .stat-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      text-align: center;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .stat-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.12);
+    }
+    .stat-card .num {
+      font-family: var(--font-mono);
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-card .label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+    /* ----- Skills ----- */
+    .skill-cats { display: flex; flex-direction: column; gap: 2rem; }
+    .skill-cat h3 {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .skill-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+    .pill {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 0.5rem 0.9rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: border-color var(--transition), color var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+    .pill i { color: var(--accent); font-size: 0.85rem; }
+    .pill:hover {
+      border-color: var(--accent);
+      color: var(--text);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+      transform: translateY(-2px);
+    }
+    .skill-bars { margin-top: 2.5rem; }
+    .skill-bar-row {
+      margin-bottom: 1.25rem;
+    }
+    .skill-bar-row label {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.35rem;
+    }
+    .skill-bar-track {
+      height: 8px;
+      background: var(--bg-elevated);
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .skill-bar-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), #22d3ee);
+      border-radius: 4px;
+      box-shadow: 0 0 12px var(--accent-glow);
+      transition: width 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .skill-bar-row.visible .skill-bar-fill { width: var(--w); }
+
+    /* ----- Projects ----- */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .project-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+    .project-card:hover {
+      border-color: rgba(56, 189, 248, 0.6);
+      box-shadow: 0 0 28px rgba(56, 189, 248, 0.18);
+      transform: translateY(-4px);
+    }
+    .project-card h3 {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      margin-bottom: 0.35rem;
+    }
+    .project-card .tag-badge {
+      display: inline-block;
+      margin-bottom: 0.85rem;
+    }
+    .project-card > p:first-of-type {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      flex: 1;
+      margin-bottom: 1rem;
+    }
+    .project-card p.project-highlight {
+      flex: 0 0 auto;
+    }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.25rem; }
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 0.25rem 0.5rem;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-radius: 4px;
+    }
+    .tag.tag-badge {
+      background: transparent;
+      border: 1px solid var(--accent);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .project-highlight {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin: 0.85rem 0 1rem;
+      padding-left: 0.85rem;
+      border-left: 3px solid var(--accent);
+      line-height: 1.5;
+    }
+    .project-highlight strong { color: var(--accent); font-weight: 600; }
+    .card-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .btn-sm {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.55rem 1rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      transition: border-color var(--transition), color var(--transition);
+    }
+    .btn-sm:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+    .btn-sm.is-disabled {
+      opacity: 0.45;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+
+    /* ----- Timeline ----- */
+    .timeline {
+      position: relative;
+      padding-left: 1.5rem;
+      border-left: 2px solid var(--border);
+      margin-left: 0.5rem;
+    }
+    .timeline-item {
+      position: relative;
+      padding-bottom: 2rem;
+      padding-left: 1.5rem;
+    }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -1.5rem;
+      top: 0.35rem;
+      width: 12px;
+      height: 12px;
+      background: var(--bg);
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      transform: translateX(-7px);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+    .timeline-item h3 {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      margin-bottom: 0.25rem;
+    }
+    .timeline-meta {
+      font-size: 0.85rem;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .timeline-item p, .timeline-item ul {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+    .timeline-item ul { margin-left: 1.25rem; margin-top: 0.5rem; }
+    .timeline-item li { margin-bottom: 0.35rem; }
+    .course-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
+
+    /* ----- Internship ----- */
+    .internship-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .internship-card:hover {
+      border-color: rgba(56, 189, 248, 0.45);
+      box-shadow: 0 0 32px rgba(56, 189, 248, 0.12);
+    }
+    .internship-header {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .internship-logo {
+      width: 72px;
+      height: 72px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      padding: 6px;
+      object-fit: contain;
+    }
+    .internship-title-wrap { flex: 1; min-width: 220px; }
+    .internship-title-wrap h3 {
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+      margin-bottom: 0.35rem;
+    }
+    .internship-org {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      margin-bottom: 0.75rem;
+    }
+    .internship-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .internship-badges .tag { font-size: 0.7rem; }
+    .internship-intro {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .internship-tasks-title {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .internship-weeks {
+      display: grid;
+      gap: 1.25rem;
+    }
+    @media (min-width: 768px) {
+      .internship-weeks { grid-template-columns: repeat(2, 1fr); }
+    }
+    .internship-week {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.15rem 1.25rem;
+      transition: border-color var(--transition);
+    }
+    .internship-week:hover { border-color: rgba(56, 189, 248, 0.35); }
+    .internship-week h4 {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .internship-week ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .internship-week li {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      padding-left: 1.35rem;
+      position: relative;
+      line-height: 1.45;
+    }
+    .internship-week li::before {
+      content: "\f00c";
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      position: absolute;
+      left: 0;
+      top: 0.15rem;
+      font-size: 0.65rem;
+      color: var(--accent);
+    }
+    .internship-week li.is-placeholder {
+      color: var(--text-muted);
+      font-style: italic;
+      opacity: 0.75;
+    }
+    .internship-week li code {
+      font-family: var(--font-mono);
+      font-size: 0.8em;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+    .internship-days {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-top: 0.25rem;
+    }
+    .internship-day {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
+    }
+    .internship-day h5 {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text);
+      margin-bottom: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .internship-day h5::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+      flex-shrink: 0;
+    }
+    .internship-day ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .internship-day li {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      padding-left: 1.35rem;
+      position: relative;
+      line-height: 1.45;
+    }
+    .internship-day li::before {
+      content: "\f00c";
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      position: absolute;
+      left: 0;
+      top: 0.15rem;
+      font-size: 0.65rem;
+      color: var(--accent);
+    }
+    .internship-day li code {
+      font-family: var(--font-mono);
+      font-size: 0.8em;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+    .internship-day .week-flowchart {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .internship-day-intro {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    .internship-day-heading {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 1rem 0 0.55rem;
+    }
+    .internship-day-heading:first-of-type { margin-top: 0; }
+    .internship-day-tools {
+      margin-bottom: 1rem;
+    }
+    .internship-day-tools .tag { font-size: 0.68rem; }
+    .software-tools {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 0.25rem;
+    }
+    .software-tool {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.85rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      transition: border-color var(--transition);
+    }
+    .software-tool:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+    @media (min-width: 720px) {
+      .software-tool {
+        grid-template-columns: 1fr minmax(200px, 42%);
+        align-items: start;
+      }
+    }
+    .software-tool h6 {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+    }
+    .software-tool h6 .tag {
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+    .software-tool p {
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      line-height: 1.45;
+      margin: 0;
+    }
+    .software-tool figure {
+      margin: 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .software-tool img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .internship-note {
+      margin-top: 1.25rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+    .internship-week.has-flowchart {
+      grid-column: 1 / -1;
+    }
+    .week-flowchart {
+      margin-top: 1.25rem;
+      padding-top: 1.15rem;
+      border-top: 1px solid var(--border);
+    }
+    .flowchart-caption {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      letter-spacing: 0.02em;
+    }
+    .flowchart {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .flowchart-step {
+      width: 100%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      text-align: center;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      transition: border-color var(--transition);
+    }
+    .flowchart-step:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .flowchart-step strong {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .flowchart-step code {
+      font-family: var(--font-mono);
+      font-size: 0.9em;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+    .flowchart--vscode {
+      max-width: 520px;
+    }
+    .flowchart--vscode .flowchart-step {
+      text-align: left;
+    }
+    .flowchart-step .flowchart-hint {
+      display: block;
+      margin-top: 0.4rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .flowchart-step code.flowchart-cmd {
+      display: block;
+      margin-top: 0.55rem;
+      padding: 0.55rem 0.7rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text);
+      line-height: 1.55;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+    .flowchart-caption code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+    .flowchart-arrow {
+      color: var(--accent);
+      font-size: 1rem;
+      padding: 0.35rem 0;
+      line-height: 1;
+      opacity: 0.85;
+    }
+    @media (min-width: 900px) {
+      .flowchart--horizontal {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 100%;
+        gap: 0.5rem;
+      }
+      .flowchart--horizontal .flowchart-step {
+        flex: 1 1 140px;
+        max-width: 160px;
+      }
+      .flowchart--horizontal .flowchart-arrow {
+        padding: 0 0.25rem;
+        align-self: center;
+        transform: none;
+      }
+      .flowchart--horizontal .flowchart-arrow i {
+        transform: rotate(-90deg);
+      }
+    }
+
+    /* ----- Certifications ----- */
+    .cert-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+    .cert-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.35rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .cert-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.12);
+    }
+    .cert-card h3 { font-family: var(--font-mono); font-size: 0.95rem; margin-bottom: 0.5rem; }
+    .cert-card .org { color: var(--text-muted); font-size: 0.85rem; }
+    .cert-card .date { font-size: 0.8rem; color: var(--accent); margin: 0.75rem 0; }
+
+    /* ----- Blog ----- */
+    .blog-note {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 2rem;
+      padding: 1rem;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+
+    /* ----- Contact ----- */
+    .contact-wrap {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 2.5rem;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .contact-wrap { grid-template-columns: 1fr; }
+    }
+    form .field { margin-bottom: 1.1rem; }
+    form label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+    form input, form textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    form input:focus, form textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+    form textarea { min-height: 140px; resize: vertical; }
+    form .error-msg {
+      font-size: 0.8rem;
+      color: #f85149;
+      margin-top: 0.35rem;
+      display: none;
+    }
+    form .field.invalid input,
+    form .field.invalid textarea { border-color: #f85149; }
+    form .field.invalid .error-msg { display: block; }
+    .form-success {
+      display: none;
+      padding: 1rem 1.25rem;
+      background: rgba(46, 160, 67, 0.15);
+      border: 1px solid #3fb950;
+      border-radius: 8px;
+      color: #3fb950;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+    .form-success.show { display: block; }
+    .social-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .social-btn {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      transition: border-color var(--transition), color var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+    .social-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.2);
+      transform: translateY(-2px);
+      text-decoration: none;
+    }
+    .contact-side h3 {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .contact-side p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem; }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1.25rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+    footer span { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="#hero" class="logo" data-nav>SK<span>.</span>embedded</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#hero" data-nav>Home</a></li>
+        <li><a href="#about" data-nav>About</a></li>
+        <li><a href="#skills" data-nav>Skills</a></li>
+        <li><a href="#projects" data-nav>Projects</a></li>
+        <li><a href="#education" data-nav>Education</a></li>
+        <li><a href="#experience" data-nav>Experience</a></li>
+        <li><a href="#internship" data-nav>Internship</a></li>
+        <li><a href="#certifications" data-nav>Certs</a></li>
+        <li><a href="#blog" data-nav>Blog</a></li>
+        <li><a href="#contact" data-nav>Contact</a></li>
+      </ul>
+      <a class="nav-lab-logo" href="#about" title="Sanjivani University Tinkerers' Lab" aria-label="Sanjivani University Tinkerers' Lab">
+        <img src="tinkerers-lab-logo.png" alt="" width="44" height="44" decoding="async" />
+      </a>
+      <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="hero-bg" aria-hidden="true">
+        <div class="hero-grid"></div>
+        <div class="hero-particles" id="particles"></div>
+      </div>
+      <div class="reveal visible">
+        <h1>Hi, I'm <span class="accent">Shriraj Kamble</span></h1>
+        <p class="hero-tagline">Electronics &amp; Embedded Systems Enthusiast | Engineering Student</p>
+        <p class="typewriter-line" aria-live="polite"><span id="roleText"></span><span class="cursor" aria-hidden="true"></span></p>
+        <p class="hero-bio">
+          Electronics &amp; embedded systems enthusiast — I build with microcontrollers, sensors, and code. Engineering student at <strong>Sanjivani University</strong>, active in <strong>Tinkerers' Lab</strong> and campus robotics and embedded projects.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="resume.pdf" download><i class="fas fa-file-arrow-down"></i> Download Resume</a>
+          <a class="btn btn-ghost" href="#contact"><i class="fas fa-paper-plane"></i> Contact Me</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="reveal">
+      <h2 class="section-title">About Me</h2>
+      <div class="about-grid">
+        <div class="avatar">
+          <img src="profile.png" alt="Shriraj Kamble — professional portrait" width="200" height="200" loading="lazy" decoding="async" />
+        </div>
+        <div class="about-text">
+          <p>
+            I'm <strong>Shriraj Kamble</strong> — an engineering student who spends most of his time between schematics, breadboards, and firmware. I care about how hardware and software meet: from interrupt-driven drivers to simple, reliable IoT prototypes.
+          </p>
+          <p>
+            At <strong>Sanjivani University</strong>, I learn by doing. <strong>Tinkerers' Lab</strong> is where I experiment, break things, and fix them — and working with peers on competitions and builds keeps me pushing on technical depth and execution.
+          </p>
+          <p>
+            I'm targeting internships and roles in <strong>embedded systems</strong>, <strong>IoT</strong>, and <strong>electronics engineering</strong> — places where hands-on debugging and clear documentation matter as much as the demo.
+          </p>
+          <div class="stats">
+            <div class="stat-card"><div class="num">10+</div><div class="label">Projects &amp; builds</div></div>
+            <div class="stat-card"><div class="num">3+</div><div class="label">Workshops supported</div></div>
+            <div class="stat-card"><div class="num">4+</div><div class="label">Team &amp; competition builds</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills" class="reveal">
+      <h2 class="section-title">Skills</h2>
+      <div class="skill-cats">
+        <div>
+          <h3><i class="fas fa-microchip"></i> Hardware</h3>
+          <div class="skill-pills">
+            <span class="pill"><i class="fas fa-bolt"></i> ESP32</span>
+            <span class="pill"><i class="fas fa-infinity"></i> Arduino</span>
+            <span class="pill"><i class="fab fa-raspberry-pi"></i> Raspberry Pi</span>
+            <span class="pill"><i class="fas fa-wave-square"></i> Ultrasonic Sensors</span>
+            <span class="pill"><i class="fas fa-diagram-project"></i> Circuit Design</span>
+          </div>
+        </div>
+        <div>
+          <h3><i class="fas fa-code"></i> Programming</h3>
+          <div class="skill-pills">
+            <span class="pill"><i class="fas fa-file-code"></i> C / C++</span>
+            <span class="pill"><i class="fab fa-python"></i> Python</span>
+            <span class="pill"><i class="fas fa-terminal"></i> MicroPython</span>
+          </div>
+        </div>
+        <div>
+          <h3><i class="fas fa-screwdriver-wrench"></i> Tools &amp; Platforms</h3>
+          <div class="skill-pills">
+            <span class="pill"><i class="fas fa-laptop-code"></i> VS Code</span>
+            <span class="pill"><i class="fas fa-hammer"></i> PlatformIO</span>
+            <span class="pill"><i class="fab fa-git-alt"></i> Git</span>
+            <span class="pill"><i class="fab fa-github"></i> GitHub</span>
+            <span class="pill"><i class="fas fa-draw-polygon"></i> Fritzing</span>
+            <span class="pill"><i class="fas fa-cube"></i> Tinkercad</span>
+          </div>
+        </div>
+        <div>
+          <h3><i class="fas fa-people-group"></i> Soft Skills</h3>
+          <div class="skill-pills">
+            <span class="pill"><i class="fas fa-chalkboard-user"></i> Teaching</span>
+            <span class="pill"><i class="fas fa-comments"></i> Communication</span>
+            <span class="pill"><i class="fas fa-handshake"></i> Team Collaboration</span>
+          </div>
+        </div>
+      </div>
+      <div class="skill-bars">
+        <div class="skill-bar-row reveal" data-bar style="--w: 88%">
+          <label><span>Embedded / MCU</span><span>88%</span></label>
+          <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
+        </div>
+        <div class="skill-bar-row reveal" data-bar style="--w: 82%">
+          <label><span>IoT &amp; Sensors</span><span>82%</span></label>
+          <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
+        </div>
+        <div class="skill-bar-row reveal" data-bar style="--w: 78%">
+          <label><span>C / C++ / Python</span><span>78%</span></label>
+          <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
+        </div>
+        <div class="skill-bar-row reveal" data-bar style="--w: 85%">
+          <label><span>Workshops &amp; Mentoring</span><span>85%</span></label>
+          <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects" class="reveal">
+      <h2 class="section-title">Projects</h2>
+      <div class="card-grid">
+        <article class="project-card">
+          <h3>Sankalp Rover</h3>
+          <span class="tag tag-badge">Robotics</span>
+          <p>A semi-autonomous ground rover designed for exploration tasks. Features a Raspberry Pi brain, camera-based vision system, GPS navigation, and a fully custom 3D-printed chassis. Built as part of a competitive rover challenge.</p>
+          <div class="tags">
+            <span class="tag">Raspberry Pi</span><span class="tag">Camera Module</span><span class="tag">GPS</span><span class="tag">3D Printing</span><span class="tag">Python</span><span class="tag">Custom PCB</span>
+          </div>
+          <p class="project-highlight"><strong>Highlight:</strong> Designed for real-world terrain navigation with live video feed</p>
+          <div class="card-actions">
+            <a class="btn-sm" href="https://github.com/" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a>
+            <span class="btn-sm is-disabled" title="Demo coming soon">Live Demo</span>
+          </div>
+        </article>
+        <article class="project-card">
+          <h3>Nano Satellite</h3>
+          <span class="tag tag-badge">Space Tech</span>
+          <p>A CanSat/nano satellite prototype designed to collect and transmit atmospheric data during flight. Integrates onboard sensors, RF communication module, and a custom PCB for compact form factor.</p>
+          <div class="tags">
+            <span class="tag">Arduino</span><span class="tag">RF Module</span><span class="tag">Custom PCB</span><span class="tag">Sensors (temp, pressure, GPS)</span><span class="tag">C++</span>
+          </div>
+          <p class="project-highlight"><strong>Highlight:</strong> Compact satellite system with real-time RF data transmission</p>
+          <div class="card-actions">
+            <a class="btn-sm" href="https://github.com/" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a>
+            <span class="btn-sm is-disabled" title="Demo coming soon">Live Demo</span>
+          </div>
+        </article>
+        <article class="project-card">
+          <h3>Line Follower Robot</h3>
+          <span class="tag tag-badge">Autonomous</span>
+          <p>An autonomous robot that detects and follows a line path using IR sensors. Built on Arduino with a tuned PID control algorithm for smooth and accurate navigation.</p>
+          <div class="tags">
+            <span class="tag">Arduino</span><span class="tag">IR Sensors</span><span class="tag">Motor Driver</span><span class="tag">C++</span>
+          </div>
+          <p class="project-highlight"><strong>Highlight:</strong> PID-controlled for smooth line tracking at speed</p>
+          <div class="card-actions">
+            <a class="btn-sm" href="https://github.com/" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a>
+            <span class="btn-sm is-disabled" title="Demo coming soon">Live Demo</span>
+          </div>
+        </article>
+        <article class="project-card">
+          <h3>RC Car</h3>
+          <span class="tag tag-badge">RC Systems</span>
+          <p>A custom-built remote-controlled car using RF modules for wireless control. Features a hand-built chassis, motor driver circuit, and a custom PCB for clean electronics integration.</p>
+          <div class="tags">
+            <span class="tag">Arduino</span><span class="tag">RF Module</span><span class="tag">Custom PCB</span><span class="tag">RC Components</span><span class="tag">3D Printing</span>
+          </div>
+          <p class="project-highlight"><strong>Highlight:</strong> Fully custom RF-controlled system with hand-designed PCB</p>
+          <div class="card-actions">
+            <a class="btn-sm" href="https://github.com/" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a>
+            <span class="btn-sm is-disabled" title="Demo coming soon">Live Demo</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="education" class="reveal">
+      <h2 class="section-title">Education</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <h3>B.Tech CSE[AIML]</h3>
+          <div class="timeline-meta">Sanjivani University · Kopargaon, Maharashtra · 2025 — 2029</div>
+          <p>Coursework highlights:</p>
+          <div class="course-tags">
+            <span class="tag">Artificial Intelligence</span>
+            <span class="tag">Machine Learning</span>
+            <span class="tag">Deep Learning</span>
+            <span class="tag">Python Programming</span>
+            <span class="tag">Object-Oriented Programming (OOP)</span>
+            <span class="tag">Database Management Systems (DBMS)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience" class="reveal">
+      <h2 class="section-title">Experience / Volunteering</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <h3>IoT Workshop Facilitator</h3>
+          <div class="timeline-meta">Tinkerers' Lab, Sanjivani University · Recent</div>
+          <ul>
+            <li>Guided students through hands-on ESP32 and ultrasonic sensor lab sessions.</li>
+            <li>Delivered clear explanations of hardware–software integration and debugging workflows.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="internship" class="reveal">
+      <h2 class="section-title">Summer Internship</h2>
+      <article class="internship-card">
+        <div class="internship-header">
+          <img class="internship-logo" src="tinkerers-lab-logo.png" alt="Tinkerers' Lab logo" width="72" height="72" loading="lazy" decoding="async" />
+          <div class="internship-title-wrap">
+            <h3>Summer Internship Program</h3>
+            <p class="internship-org">Tinkerers' Lab · Sanjivani University · Kopargaon, Maharashtra</p>
+            <div class="internship-badges">
+              <span class="tag">4 Weeks</span>
+              <span class="tag">Summer 2026</span>
+              <span class="tag">Embedded &amp; IoT</span>
+            </div>
+          </div>
+        </div>
+        <p class="internship-intro">
+          Hands-on summer internship focused on embedded systems, prototyping, and lab-based engineering work at Tinkerers' Lab. Edit the task lists below with your actual responsibilities and deliverables from each week.
+        </p>
+        <h3 class="internship-tasks-title"><i class="fas fa-list-check"></i> Tasks &amp; Responsibilities</h3>
+        <div class="internship-weeks">
+          <div class="internship-week has-flowchart">
+            <h4>Week 1</h4>
+            <div class="internship-days">
+              <div class="internship-day">
+                <h5>Day 1 — VS Code, GitHub &amp; portfolio setup</h5>
+                <ul>
+                  <li>Created a GitHub repository and added the project from VS Code</li>
+                  <li>Opened the <code>portfolio</code> folder in VS Code (<code>index.html</code>, assets, styles)</li>
+                  <li>Used Git in the VS Code terminal to commit and push the portfolio website to GitHub</li>
+                </ul>
+                <div class="week-flowchart">
+                  <p class="flowchart-caption"><i class="fas fa-code-branch"></i> VS Code — add repository &amp; <code>portfolio</code> project</p>
+                  <div class="flowchart flowchart--vscode" role="img" aria-label="Flowchart: create GitHub repo and push portfolio folder from VS Code using Git commands">
+                    <div class="flowchart-step">
+                      <strong>Step 1 — Create repository (GitHub)</strong>
+                      Sign in at github.com → <em>New repository</em> → name it (e.g. <code>portfolio</code>) → Public → Create repository
+                    </div>
+                    <span class="flowchart-arrow" aria-hidden="true"><i class="fas fa-arrow-down"></i></span>
+                    <div class="flowchart-step">
+                      <strong>Step 2 — Open project in VS Code</strong>
+                      VS Code → <em>File</em> → <em>Open Folder</em> → select the <code>portfolio</code> folder
+                      <span class="flowchart-hint">Or: <em>Terminal</em> → <em>New Terminal</em> (Ctrl + `)</span>
+                    </div>
+                    <span class="flowchart-arrow" aria-hidden="true"><i class="fas fa-arrow-down"></i></span>
+                    <div class="flowchart-step">
+                      <strong>Step 3 — Initialize Git &amp; connect remote</strong>
+                      In the VS Code terminal, inside <code>portfolio</code>:
+                      <code class="flowchart-cmd">git init
+git remote add origin https://github.com/YOUR_USERNAME/portfolio.git</code>
+                      <span class="flowchart-hint">UI: Source Control (Ctrl+Shift+G) → Initialize Repository → Add Remote</span>
+                    </div>
+                    <span class="flowchart-arrow" aria-hidden="true"><i class="fas fa-arrow-down"></i></span>
+                    <div class="flowchart-step">
+                      <strong>Step 4 — Stage &amp; commit files</strong>
+                      <code class="flowchart-cmd">git add .
+git commit -m "Add portfolio website"</code>
+                      <span class="flowchart-hint">UI: Source Control → stage changes (+) → enter message → Commit</span>
+                    </div>
+                    <span class="flowchart-arrow" aria-hidden="true"><i class="fas fa-arrow-down"></i></span>
+                    <div class="flowchart-step">
+                      <strong>Step 5 — Push to GitHub</strong>
+                      <code class="flowchart-cmd">git branch -M main
+git push -u origin main</code>
+                      <span class="flowchart-hint">UI: Source Control → … → Push, or Publish Branch</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="internship-day">
+                <h5>Day 2 — Software Installation &amp; Tool Exploration</h5>
+                <p class="internship-day-intro">
+                  On the second day of the internship, I installed and explored multiple industry-standard software tools used for design, content creation, and development purposes.
+                </p>
+                <h6 class="internship-day-heading">Software Installed &amp; Explored</h6>
+                <div class="software-tools">
+                  <article class="software-tool">
+                    <div class="software-tool-text">
+                      <h6>Inkscape <span class="tag">Vector graphics</span></h6>
+                      <p>Explored vector graphic designing and SVG-based illustration tools, including the Trace Bitmap workflow and essential UI navigation.</p>
+                    </div>
+                    <figure>
+                      <img src="week1-day2-inkscape.png" alt="Inkscape — vector graphics editor with Trace Bitmap panel" width="800" height="500" loading="lazy" decoding="async" />
+                    </figure>
+                  </article>
+                  <article class="software-tool">
+                    <div class="software-tool-text">
+                      <h6>GIMP <span class="tag">Raster editing</span></h6>
+                      <p>Practiced image editing, layer management, and graphic enhancement tools in the GNU Image Manipulation Program.</p>
+                    </div>
+                    <figure>
+                      <img src="week1-day2-gimp.png" alt="GIMP — GNU Image Manipulation Program interface" width="800" height="500" loading="lazy" decoding="async" />
+                    </figure>
+                  </article>
+                  <article class="software-tool">
+                    <div class="software-tool-text">
+                      <h6>OBS Studio <span class="tag">Screen capture</span></h6>
+                      <p>Learned the basics of screen recording, streaming setup, and video capture with display sources and audio mixer controls.</p>
+                    </div>
+                    <figure>
+                      <img src="week1-day2-obs.png" alt="OBS Studio — screen recording and streaming setup" width="800" height="500" loading="lazy" decoding="async" />
+                    </figure>
+                  </article>
+                  <article class="software-tool">
+                    <div class="software-tool-text">
+                      <h6>Autodesk Fusion 360 <span class="tag">3D CAD</span></h6>
+                      <p>Explored 3D modeling, CAD designing, and basic interface navigation in the Fusion design workspace.</p>
+                    </div>
+                    <figure>
+                      <img src="week1-day2-fusion.png" alt="Autodesk Fusion — 3D CAD design workspace" width="800" height="500" loading="lazy" decoding="async" />
+                    </figure>
+                  </article>
+                </div>
+                <h6 class="internship-day-heading">Learning Outcomes</h6>
+                <ul>
+                  <li>Understood the purpose and applications of each software.</li>
+                  <li>Gained basic hands-on experience with UI navigation and essential features.</li>
+                  <li>Learned how these tools are used in real-world projects for designing, editing, recording, and prototyping.</li>
+                </ul>
+                <h6 class="internship-day-heading">Technologies &amp; Tools</h6>
+                <div class="tags internship-day-tools">
+                  <span class="tag">Inkscape</span>
+                  <span class="tag">GIMP</span>
+                  <span class="tag">OBS Studio</span>
+                  <span class="tag">Fusion 360</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="internship-week">
+            <h4>Week 2</h4>
+            <ul>
+              <li class="is-placeholder">Add your Week 2 task here</li>
+              <li class="is-placeholder">Add your Week 2 task here</li>
+            </ul>
+          </div>
+          <div class="internship-week">
+            <h4>Week 3</h4>
+            <ul>
+              <li class="is-placeholder">Add your Week 3 task here</li>
+              <li class="is-placeholder">Add your Week 3 task here</li>
+            </ul>
+          </div>
+          <div class="internship-week">
+            <h4>Week 4</h4>
+            <ul>
+              <li class="is-placeholder">Add your Week 4 task here</li>
+              <li class="is-placeholder">Add your Week 4 task here</li>
+            </ul>
+          </div>
+        </div>
+        <p class="internship-note">Tasks are updated weekly as the internship progresses.</p>
+      </article>
+    </section>
+
+    <section id="certifications" class="reveal">
+      <h2 class="section-title">Certifications</h2>
+      <div class="cert-grid">
+        <div class="cert-card">
+          <h3>Cisco Introduction to IoT</h3>
+          <p class="org">Cisco Networking Academy</p>
+          <p class="date">Placeholder · 2025</p>
+          <a class="btn-sm" href="#">View Certificate</a>
+        </div>
+        <div class="cert-card">
+          <h3>NPTEL — Embedded Systems</h3>
+          <p class="org">NPTEL / IIT</p>
+          <p class="date">Placeholder · 2025</p>
+          <a class="btn-sm" href="#">View Certificate</a>
+        </div>
+        <div class="cert-card">
+          <h3>GitHub Foundations</h3>
+          <p class="org">GitHub</p>
+          <p class="date">Placeholder · 2025</p>
+          <a class="btn-sm" href="#">View Certificate</a>
+        </div>
+      </div>
+      <p style="margin-top:1rem;color:var(--text-muted);font-size:0.9rem;">Replace placeholders with your real credentials and PDF/image links.</p>
+    </section>
+
+    <section id="blog" class="reveal">
+      <h2 class="section-title">Blog</h2>
+      <div class="card-grid">
+        <article class="project-card">
+          <h3>Getting Started with ESP32 and MicroPython</h3>
+          <p>From flashing firmware to your first GPIO blink — a compact path into rapid IoT prototyping.</p>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem;">May 2, 2026</p>
+          <a class="btn-sm" href="#">Read More</a>
+        </article>
+        <article class="project-card">
+          <h3>How Ultrasonic Sensors Work — A Deep Dive</h3>
+          <p>Timing diagrams, echo paths, and practical tips for noise and mounting in embedded projects.</p>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem;">April 18, 2026</p>
+          <a class="btn-sm" href="#">Read More</a>
+        </article>
+        <article class="project-card">
+          <h3>My Experience Facilitating an IoT Workshop</h3>
+          <p>Lessons from the lab floor: pacing, common failure modes, and how to keep a room full of boards alive.</p>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem;">March 8, 2026</p>
+          <a class="btn-sm" href="#">Read More</a>
+        </article>
+      </div>
+      <p class="blog-note">Blog coming soon — follow me on <a href="https://www.linkedin.com/">LinkedIn</a> for updates.</p>
+    </section>
+
+    <section id="contact" class="reveal">
+      <h2 class="section-title">Contact</h2>
+      <div class="contact-wrap">
+        <div>
+          <div class="form-success" id="formSuccess" role="status">Message received. I'll get back to you soon. (Demo — no data was sent.)</div>
+          <form id="contactForm" novalidate>
+            <div class="field" data-field="name">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" autocomplete="name" />
+              <p class="error-msg">Please enter your name.</p>
+            </div>
+            <div class="field" data-field="email">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" autocomplete="email" />
+              <p class="error-msg">Enter a valid email address.</p>
+            </div>
+            <div class="field" data-field="subject">
+              <label for="subject">Subject</label>
+              <input type="text" id="subject" name="subject" />
+              <p class="error-msg">Please add a subject.</p>
+            </div>
+            <div class="field" data-field="message">
+              <label for="message">Message</label>
+              <textarea id="message" name="message"></textarea>
+              <p class="error-msg">Message should be at least 20 characters.</p>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send</button>
+          </form>
+        </div>
+        <aside class="contact-side">
+          <h3>Connect</h3>
+          <p>Kopargaon, Maharashtra, India</p>
+          <div class="social-row">
+            <a class="social-btn" href="https://github.com/" target="_blank" rel="noopener" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            <a class="social-btn" href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a class="social-btn" href="mailto:your.email@example.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Built with HTML, CSS &amp; JS · <span>Shriraj Kamble</span> · Embedded &amp; IoT</p>
+  </footer>
+
+  <script>
+    (function () {
+      var roles = [
+        "Embedded Systems Developer",
+        "IoT Enthusiast",
+        "Engineering Student",
+        "Robotics Enthusiast"
+      ];
+      var roleEl = document.getElementById("roleText");
+      var roleIndex = 0;
+      var charIndex = 0;
+      var deleting = false;
+      var typeSpeed = 85;
+      var deleteSpeed = 45;
+      var pauseEnd = 2000;
+      var pauseStart = 400;
+
+      function tick() {
+        var full = roles[roleIndex];
+        if (!deleting) {
+          charIndex++;
+          roleEl.textContent = full.slice(0, charIndex);
+          if (charIndex === full.length) {
+            deleting = true;
+            setTimeout(tick, pauseEnd);
+            return;
+          }
+          setTimeout(tick, typeSpeed);
+        } else {
+          charIndex--;
+          roleEl.textContent = full.slice(0, charIndex);
+          if (charIndex === 0) {
+            deleting = false;
+            roleIndex = (roleIndex + 1) % roles.length;
+            setTimeout(tick, pauseStart);
+            return;
+          }
+          setTimeout(tick, deleteSpeed);
+        }
+      }
+      tick();
+
+      /* Particles */
+      var container = document.getElementById("particles");
+      if (container) {
+        for (var i = 0; i < 32; i++) {
+          var p = document.createElement("span");
+          p.className = "particle";
+          p.style.left = Math.random() * 100 + "%";
+          p.style.top = Math.random() * 100 + "%";
+          p.style.animationDelay = Math.random() * 8 + "s";
+          p.style.animationDuration = 6 + Math.random() * 6 + "s";
+          container.appendChild(p);
+        }
+      }
+
+      /* Intersection Observer — fade-in */
+      var revealEls = document.querySelectorAll(".reveal");
+      var io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) e.target.classList.add("visible");
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+      );
+      revealEls.forEach(function (el) { io.observe(el); });
+
+      /* Skill bars */
+      var bars = document.querySelectorAll(".skill-bar-row[data-bar]");
+      var barIo = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) e.target.classList.add("visible");
+          });
+        },
+        { threshold: 0.3 }
+      );
+      bars.forEach(function (b) { barIo.observe(b); });
+
+      /* Scroll spy — active nav */
+      var sections = ["hero", "about", "skills", "projects", "education", "experience", "internship", "certifications", "blog", "contact"];
+      var navLinks = document.querySelectorAll(".nav-links a[data-nav]");
+
+      function onScroll() {
+        var scrollY = window.scrollY + 120;
+        var current = "hero";
+        for (var i = sections.length - 1; i >= 0; i--) {
+          var sec = document.getElementById(sections[i]);
+          if (sec && sec.offsetTop <= scrollY) {
+            current = sections[i];
+            break;
+          }
+        }
+        navLinks.forEach(function (a) {
+          var href = a.getAttribute("href");
+          a.classList.toggle("active", href === "#" + current);
+        });
+      }
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+
+      /* Mobile menu */
+      var toggle = document.getElementById("navToggle");
+      var navList = document.getElementById("navLinks");
+      if (toggle && navList) {
+        toggle.addEventListener("click", function () {
+          var open = navList.classList.toggle("open");
+          toggle.setAttribute("aria-expanded", open ? "true" : "false");
+          toggle.innerHTML = open ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+        navList.querySelectorAll("a").forEach(function (a) {
+          a.addEventListener("click", function () {
+            navList.classList.remove("open");
+            toggle.setAttribute("aria-expanded", "false");
+            toggle.innerHTML = '<i class="fas fa-bars"></i>';
+          });
+        });
+      }
+
+      /* Contact form */
+      var form = document.getElementById("contactForm");
+      var success = document.getElementById("formSuccess");
+      if (form) {
+        form.addEventListener("submit", function (ev) {
+          ev.preventDefault();
+          success.classList.remove("show");
+          var ok = true;
+          var name = document.getElementById("name");
+          var email = document.getElementById("email");
+          var subject = document.getElementById("subject");
+          var message = document.getElementById("message");
+          var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+          function setInvalid(field, invalid) {
+            var wrap = form.querySelector('.field[data-field="' + field + '"]');
+            if (wrap) wrap.classList.toggle("invalid", invalid);
+          }
+
+          setInvalid("name", false);
+          setInvalid("email", false);
+          setInvalid("subject", false);
+          setInvalid("message", false);
+
+          if (!name.value.trim()) { setInvalid("name", true); ok = false; }
+          if (!emailRe.test(email.value.trim())) { setInvalid("email", true); ok = false; }
+          if (!subject.value.trim()) { setInvalid("subject", true); ok = false; }
+          if (message.value.trim().length < 20) { setInvalid("message", true); ok = false; }
+
+          if (ok) {
+            success.classList.add("show");
+            form.reset();
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
